@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${KIBANA_NAME}
+  namespace: ${NAMESPACE}
+spec:
+  replicas: ${REPLICAS}
+
+  revisionHistoryLimit: 10
+
+  selector:
+    matchLabels:
+      application: ${KIBANA_NAME}
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+  template:
+    metadata:
+      labels:
+        application: ${KIBANA_NAME}
+
+    spec:
+      containers:
+        - name: kibana
+
+          image: ${KIBANA_IMAGE}
+
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: ${ELASTICSEARCH_HOSTS}
+
+            - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+              value: /etc/kibana/cert/tls.crt
+
+            - name: SERVER_NAME
+              value: "${SERVER_NAME}"
+
+            - name: SERVER_PUBLICBASEURL
+              value: ${SERVER_PUBLICBASEURL}
+
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ${CREDENTIALS_SECRET}
+                  key: ELASTICSEARCH_PASSWORD
+
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ${CREDENTIALS_SECRET}
+                  key: ELASTICSEARCH_USERNAME
+
+            - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: ${CREDENTIALS_SECRET}
+                  key: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+                  optional: false
+            - name: XPACK_SECURITY_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: ${CREDENTIALS_SECRET}
+                  key: XPACK_SECURITY_ENCRYPTIONKEY
+                  optional: false
+
+            - name: XPACK_REPORTING_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: ${CREDENTIALS_SECRET}
+                  key: XPACK_REPORTING_ENCRYPTIONKEY
+                  optional: false
+
+          ports:
+            - name: kibana-port
+              containerPort: 5601
+              protocol: TCP
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+
+          volumeMounts:
+            - name: elasticsearch-ca
+              mountPath: /etc/kibana/cert
+              readOnly: true
+
+      volumes:
+        - name: elasticsearch-ca
+          secret:
+            secretName: ${CA_SECRET}
+            defaultMode: 493
+            optional: false
+
+      terminationGracePeriodSeconds: 30

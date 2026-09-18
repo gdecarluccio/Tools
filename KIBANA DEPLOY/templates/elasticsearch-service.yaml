@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${ELASTICSEARCH_SERVICE}
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: elk-port
+      port: 9200
+      protocol: TCP
+      targetPort: 9200

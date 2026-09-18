@@ -1,0 +1,42 @@
+allowClusterResourcesFromAllNamespaces: false
+clusterDomain: cluster.local
+clusterFlows: []
+clusterOutputs: []
+controlNamespace: ''
+defaultFlow: {}
+enableRecreateWorkloadOnImmutableFieldChange: false
+errorOutputRef: ''
+eventTailer: {}
+flowConfigCheckDisabled: false
+flowConfigOverride: ''
+fluentbit:
+  inputTail:
+    multiline.parser:
+      - cri
+    storage.type: filesystem
+fluentbitDisabled: false
+fluentd:
+  resources:
+    limits:
+      cpu: '2'
+      memory: 2G
+    requests:
+      cpu: '1'
+      memory: 1G
+fluentdDisabled: false
+fullnameOverride: ''
+globalFilters: []
+hostTailer: {}
+loggingRef: ''
+nameOverride: ''
+nodeAgents: {}
+scc:
+  enabled: false
+skipInvalidResources: false
+syslogNG: {}
+tls:
+  enabled: true
+  fluentbitSecretName: ''
+  fluentdSecretName: ''
+  sharedKey: ''
+watchNamespaces: []
