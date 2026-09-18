@@ -68,51 +68,9 @@ spec:
   localOutputRefs:
     - ${index_name}
   filters:
-
     - dedot:
         de_dot_nested: true
         de_dot_separator: "_"
-
-    - record_transformer:
-        enable_ruby: true
-        records:
-          - logging_stream_id: '\${record["kubernetes"]["pod_name"]}/\${record["kubernetes"]["container_name"]}/\${record["stream"]}'
-
-    - concat:
-        key: log
-        multiline_start_regexp: '/^(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}|\d{1,3}(?:\.\d{1,3}){3}\s+-\s+-\s+\[)/'
-        separator: "\n"
-        stream_identity_key: logging_stream_id
-        flush_interval: 0
-        use_first_timestamp: true
-
-    - detectExceptions:
-        languages:
-          - java
-          - python
-        max_lines: 1000
-        multiline_flush_interval: "0.5"
-        message: log
-
-    - parser:
-        key_name: log
-        reserve_data: true
-        reserve_time: true
-        remove_key_name_field: false
-        emit_invalid_record_to_error: false
-        hash_value_field: parsed
-        parse:
-          type: multi_format
-          patterns:
-            - format: json
-            - format: none
-
-    - record_transformer:
-        remove_keys: logging_stream_id
-        records:
-          - logging_pipeline_version: "v2"
-          - logging_multiline_engine: "concat-universal-v1"
-
 
 EOF
 

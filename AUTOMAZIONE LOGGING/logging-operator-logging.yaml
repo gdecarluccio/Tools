@@ -9,11 +9,7 @@ errorOutputRef: ''
 eventTailer: {}
 flowConfigCheckDisabled: false
 flowConfigOverride: ''
-fluentbit:
-  inputTail:
-    multiline.parser:
-      - cri
-    storage.type: filesystem
+fluentbit: {}
 fluentbitDisabled: false
 fluentd:
   resources:
